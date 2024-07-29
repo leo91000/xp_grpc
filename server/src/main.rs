@@ -1,42 +1,28 @@
-use tonic::{transport::Server, Request, Response, Status};
+mod chat_app;
+mod hello_world;
 
-use hello_world::greeter_server::{Greeter, GreeterServer};
-use hello_world::{HelloReply, HelloRequest};
+use chat_app::ChatApp;
+use tonic::transport::Server;
 
-pub mod hello_world {
-    tonic::include_proto!("helloworld");
-}
-
-#[derive(Debug, Default)]
-pub struct MyGreeter {}
-
-#[tonic::async_trait]
-impl Greeter for MyGreeter {
-    async fn say_hello(
-        &self,
-        request: Request<HelloRequest>,
-    ) -> Result<Response<HelloReply>, Status> {
-        println!("Got a request: {:?}", request);
-
-        let reply = HelloReply {
-            message: format!("Hello {}!", request.into_inner().name),
-        };
-
-        Ok(Response::new(reply))
-    }
-}
+use hello_world::MyGreeter;
+use tracing_subscriber::layer::SubscriberExt;
+use tracing_subscriber::util::SubscriberInitExt;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    tracing_subscriber::fmt::init();
+    let tracing_fmt_layer = tracing_subscriber::fmt::layer();
+    let tracing_filter_layer = tracing_subscriber::filter::LevelFilter::DEBUG;
+    tracing_subscriber::registry()
+        .with(tracing_fmt_layer)
+        .with(tracing_filter_layer)
+        .init();
 
     let addr = "[::1]:50051".parse()?;
-    let greeter = MyGreeter::default();
-    let greeter = GreeterServer::new(greeter);
 
     Server::builder()
         .accept_http1(true)
-        .add_service(tonic_web::enable(greeter))
+        .add_service(tonic_web::enable(MyGreeter::server()))
+        .add_service(tonic_web::enable(ChatApp::server()))
         .serve(addr)
         .await?;
 

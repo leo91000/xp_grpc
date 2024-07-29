@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package chatapp;
+
+import "google/protobuf/empty.proto";
+
+// Chat message structure
+message ChatMessage {
+  int32 id = 1;
+  string user = 2;
+  string message = 3;
+  int64 timestamp = 4;
+}
+
+// Chat history containing multiple messages
+message ChatHistory {
+  repeated ChatMessage messages = 1;
+}
+
+// The chat service definition
+service ChatService {
+  rpc SendMessage (ChatMessage) returns (ChatMessage);
+  rpc GetChatHistory (google.protobuf.Empty) returns (ChatHistory);
+  rpc StreamMessages (google.protobuf.Empty) returns (stream ChatMessage);
+}

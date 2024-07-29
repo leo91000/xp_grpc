@@ -7,17 +7,18 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
-    "preview": "vite preview",
-    "grpc:generate:client": "protoc -I=../xp_tonic/proto helloworld.proto --ts_out ./src/grpc --ts_opt=no_namespace --ts_opt=target=web --ts_opt=unary_rpc_promise=true"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.11.1",
-    "@types/google-protobuf": "^3.15.12",
     "google-protobuf": "^3.21.4",
     "grpc-web": "^1.5.0",
+    "uuid": "^10.0.0",
     "vue": "^3.4.31"
   },
   "devDependencies": {
+    "@types/google-protobuf": "^3.15.12",
+    "@types/uuid": "^10.0.0",
     "@vitejs/plugin-vue": "^5.0.5",
     "typescript": "^5.2.2",
     "vite": "^5.3.4",
